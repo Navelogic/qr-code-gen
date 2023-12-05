@@ -13,7 +13,6 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.common.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,19 +29,15 @@ public class QrCodeGenService {
     private static final String charset = "UTF-8";
     private static final String strDateFormat = "ddMMyyyyHHmmss";
 
-
-
     public void genQrCode(String text) {
         log.info("Gerando QRCode {}", text);
-
         log.info("Diretório de saída: {}", outputLocation);
 
-        try{
+        try {
             String finalText = qrCodeMessage + text;
             log.info("Texto final: {}", finalText);
             processarQRCode(finalText, prepareOutputFileName(), charset, 400, 400);
-
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("Erro ao gerar QRCode", e);
         }
     }
