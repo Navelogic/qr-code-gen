@@ -1,4 +1,7 @@
-# API Gerador de QR-CODE
+# API Geradora de QRCode
+
+## Descrição
+Forneça um input de texto e ela retorna um PNG no caminho setado no application.properties. Em breve, versão WEB.
 
 ## Dependências 
 
