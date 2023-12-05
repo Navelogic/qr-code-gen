@@ -35,7 +35,7 @@ public class QrCodeGenService {
         log.info("Diretório de saída: {}", outputLocation);
 
         try {
-            String finalText = qrCodeMessage + text;
+            String finalText =  text;
             log.info("Texto final: {}", finalText);
             String outputFileName = prepareOutputFileName();
             processarQRCode(finalText, outputFileName);
@@ -52,9 +52,13 @@ public class QrCodeGenService {
         return Paths.get(outputLocation, fileName).toString();
     }
 
-    private void processarQRCode(String qrCodeData, String filePath) throws WriterException, IOException {
-        BitMatrix matrix = new MultiFormatWriter().encode(qrCodeData, BarcodeFormat.QR_CODE, QR_CODE_SIZE, QR_CODE_SIZE);
-        Path outputPath = Paths.get(filePath);
-        MatrixToImageWriter.writeToPath(matrix, "PNG", outputPath);
+    private void processarQRCode(String qrCodeData, String filePath) {
+        try {
+            BitMatrix matrix = new MultiFormatWriter().encode(qrCodeData, BarcodeFormat.QR_CODE, QR_CODE_SIZE, QR_CODE_SIZE);
+            Path outputPath = Paths.get(filePath);
+            MatrixToImageWriter.writeToPath(matrix, "PNG", outputPath);
+        } catch (WriterException | IOException e) {
+            log.error("Erro ao processar QRCode", e);
+        }
     }
 }
