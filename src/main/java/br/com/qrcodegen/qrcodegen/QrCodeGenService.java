@@ -1,9 +1,10 @@
 package br.com.qrcodegen.qrcodegen;
 
 import java.io.IOException;
-import java.sql.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,8 +27,8 @@ public class QrCodeGenService {
     @Value("${qrcode.output.directory}")
     private String outputLocation;
 
-    private static final String charset = "UTF-8";
-    private static final String strDateFormat = "ddMMyyyyHHmmss";
+    private static final int QR_CODE_SIZE = 400;
+    private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
 
     public void genQrCode(String text) {
         log.info("Gerando QRCode {}", text);
@@ -36,22 +37,24 @@ public class QrCodeGenService {
         try {
             String finalText = qrCodeMessage + text;
             log.info("Texto final: {}", finalText);
-            processarQRCode(finalText, prepareOutputFileName(), charset, 400, 400);
+            String outputFileName = prepareOutputFileName();
+            processarQRCode(finalText, outputFileName);
         } catch (Exception e) {
             log.error("Erro ao gerar QRCode", e);
         }
     }
 
     private String prepareOutputFileName() {
-        DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
-        Date date = new Date(System.currentTimeMillis());
-        return outputLocation + dateFormat.format(date) + ".png";
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
+        String formattedDateTime = now.format(formatter);
+        String fileName = formattedDateTime + ".png";
+        return Paths.get(outputLocation, fileName).toString();
     }
 
-    private void processarQRCode(String qrCodeData, String filePath, String charset, int qrCodeheight, int qrCodewidth)
-            throws WriterException, IOException {
-        BitMatrix matrix = new MultiFormatWriter().encode(new String(qrCodeData.getBytes(charset), charset),
-                BarcodeFormat.QR_CODE, qrCodewidth, qrCodeheight);
-        MatrixToImageWriter.writeToFile(matrix, filePath.substring(filePath.lastIndexOf('.') + 1), new java.io.File(filePath));
+    private void processarQRCode(String qrCodeData, String filePath) throws WriterException, IOException {
+        BitMatrix matrix = new MultiFormatWriter().encode(qrCodeData, BarcodeFormat.QR_CODE, QR_CODE_SIZE, QR_CODE_SIZE);
+        Path outputPath = Paths.get(filePath);
+        MatrixToImageWriter.writeToPath(matrix, "PNG", outputPath);
     }
 }
