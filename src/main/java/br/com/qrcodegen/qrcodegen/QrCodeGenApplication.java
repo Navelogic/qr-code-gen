@@ -9,29 +9,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.google.zxing.common.StringUtils;
 
-@SpringBootApplication
-public class QrCodeGenApplication implements CommandLineRunner {
+import lombok.extern.slf4j.Slf4j;
 
-    @Autowired
-    private QrCodeGenService qrCodeGenService;
+@SpringBootApplication
+public class QrCodeGenApplication {
+
 
     public static void main(String[] args) {
         SpringApplication.run(QrCodeGenApplication.class, args);
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-        while (true) {
-            Scanner scanner = new Scanner(System.in);
-
-            System.out.println("Digite o texto para gerar o QR Code: ");
-            String text = scanner.nextLine();
-
-            System.out.println("Texto digitado: " + text);
-            if (StringUtils.isNotBlank(text)) {
-                qrCodeGenService.genQrCode(text);
-            }
-        }
     }
 
 }
